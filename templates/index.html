@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Stockout Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <div>
+          <div class="title">Stockout Predictor</div>
+        </div>
+        <div class="header-badge">Dashboard</div>
+      </header>
+
+      <section class="hero">
+        <div class="hero-text">
+          <h2>Smarter Stockout Prevention</h2>
+          <p>
+            This dashboard scores stockout risk for each item and highlights
+            what needs review first.
+            <div class="subtitle">
+              Upload a CSV with Item name, Transaction Date, Opening Stock,
+              QTY transacted, Closing Stock, Type, and Sales value.
+            </div>
+          </p>
+        </div>
+        <img
+          class="hero-image"
+          src="https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cGlsbHN8ZW58MHx8MHx8fDA%3D"
+          alt="Pills on orange background"
+        />
+      </section>
+
+      <section class="upload-card">
+        <form method="POST" enctype="multipart/form-data" class="upload-form">
+          <input type="file" name="file" accept=".csv" required />
+          <button type="submit">Upload & Run</button>
+        </form>
+        {% if message %}
+          <div class="message">{{ message }}</div>
+        {% endif %}
+      </section>
+
+      <section class="how-it-works">
+        <h3>How it works</h3>
+        <div class="steps">
+          <div class="step">
+            <div class="step-title">1. Ingest</div>
+            <div class="step-text">Validate columns and load data.</div>
+          </div>
+          <div class="step">
+            <div class="step-title">2. Prepare</div>
+            <div class="step-text">Clean, engineer features, build latest rows.</div>
+          </div>
+          <div class="step">
+            <div class="step-title">3. Predict</div>
+            <div class="step-text">Score risk with Gradient Boosting and threshold.</div>
+          </div>
+          <div class="step">
+            <div class="step-title">4. Recommend</div>
+            <div class="step-text">Flag items for review or reorder.</div>
+          </div>
+        </div>
+      </section>
+
+      {% if table_html %}
+        <section class="kpis">
+          <div class="kpi">
+            <div class="kpi-label">Total Items</div>
+            <div class="kpi-value">{{ chart_data.total_items }}</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Reorder / Review</div>
+            <div class="kpi-value">{{ chart_data.reorder_count }}</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">OK Items</div>
+            <div class="kpi-value">{{ chart_data.ok_count }}</div>
+          </div>
+        </section>
+
+        <section class="dashboard">
+          <div class="card">
+            <h3>Risk Summary</h3>
+            <canvas id="countChart"></canvas>
+          </div>
+          <div class="card">
+            <h3>Top 10 Stockout Risk</h3>
+            <canvas id="topChart"></canvas>
+          </div>
+          <div class="card full">
+            <h3>Recommendations</h3>
+            <button id="openModal">View Table</button>
+            <a class="download" href="/download">Download CSV</a>
+          </div>
+        </section>
+
+        <div id="modal" class="modal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <div>Recommendations (Top 50)</div>
+              <button id="closeModal">Close</button>
+            </div>
+            <div class="modal-body">
+              {{ table_html | safe }}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      <footer class="footer">Made by Dennis Irimu</footer>
+    </div>
+
+    {% if chart_data %}
+    <script>
+      const chartData = {{ chart_data | tojson }};
+
+      const countCtx = document.getElementById("countChart").getContext("2d");
+      new Chart(countCtx, {
+        type: "doughnut",
+        data: {
+          labels: chartData.count_labels,
+          datasets: [{
+            data: chartData.count_values,
+            backgroundColor: ["#f97316", "#fb7185", "#22c55e", "#38bdf8"]
+          }]
+        },
+        options: { responsive: true }
+      });
+
+      const topCtx = document.getElementById("topChart").getContext("2d");
+      new Chart(topCtx, {
+        type: "bar",
+        data: {
+          labels: chartData.top_labels,
+          datasets: [{
+            label: "Stockout Probability (30d)",
+            data: chartData.top_values,
+            backgroundColor: "#f97316"
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true, max: 1 }
+          }
+        }
+      });
+    </script>
+    {% endif %}
+
+    <script>
+      const modal = document.getElementById("modal");
+      const openBtn = document.getElementById("openModal");
+      const closeBtn = document.getElementById("closeModal");
+
+      if (openBtn && modal) {
+        openBtn.addEventListener("click", () => {
+          modal.classList.add("show");
+        });
+      }
+      if (closeBtn && modal) {
+        closeBtn.addEventListener("click", () => {
+          modal.classList.remove("show");
+        });
+      }
+    </script>
+  </body>
+</html>

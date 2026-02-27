@@ -11,6 +11,22 @@ import pandas as pd
 from prepare import build_inference_features, FEATURE_COLUMNS
 
 
+def _resolve_artifacts_path(artifacts_dir):
+    """
+    Resolve artifacts path relative to this file if not absolute.
+
+    Args:
+        artifacts_dir (str): Directory containing saved artifacts.
+
+    Returns:
+        Path: Resolved artifacts path.
+    """
+    path = Path(artifacts_dir).expanduser()
+    if path.is_absolute():
+        return path
+    return Path(__file__).resolve().parent / path
+
+
 def load_artifacts(artifacts_dir="artifacts"):
     """
     Load model and metadata artifacts.
@@ -21,7 +37,7 @@ def load_artifacts(artifacts_dir="artifacts"):
     Returns:
         tuple: (model, metadata dict)
     """
-    artifacts_path = Path(artifacts_dir)
+    artifacts_path = _resolve_artifacts_path(artifacts_dir)
     model_path = artifacts_path / "stockout_gb_model.joblib"
     meta_path = artifacts_path / "stockout_model_meta.json"
 

@@ -32,6 +32,11 @@ def read_csv_file(file_path):
         raise FileNotFoundError(f"File not found: {path}")
 
     df = pd.read_csv(path)
+    df.columns = (
+        df.columns.astype(str)
+        .str.replace("\ufeff", "", regex=False)
+        .str.strip()
+    )
     missing = REQUIRED_COLUMNS.difference(df.columns)
     if missing:
         missing_list = ", ".join(sorted(missing))

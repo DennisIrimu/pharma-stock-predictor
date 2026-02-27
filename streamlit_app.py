@@ -111,6 +111,11 @@ def main():
 
     try:
         df = pd.read_csv(uploaded)
+        df.columns = (
+            df.columns.astype(str)
+            .str.replace("\ufeff", "", regex=False)
+            .str.strip()
+        )
         missing = REQUIRED_COLUMNS.difference(df.columns)
         if missing:
             missing_list = ", ".join(sorted(missing))

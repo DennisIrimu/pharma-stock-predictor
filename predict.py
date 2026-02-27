@@ -63,6 +63,9 @@ def score_latest(df, artifacts_dir="artifacts", stockout_level=0):
     Returns:
         pd.DataFrame: Recommendations dataframe.
     """
+    if "Item name" not in df.columns:
+        raise ValueError(f"'Item name' not found in columns: {list(df.columns)}")
+
     model, meta = load_artifacts(artifacts_dir)
     threshold = float(meta.get("threshold", 0.10))
 

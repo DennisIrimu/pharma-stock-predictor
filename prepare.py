@@ -5,6 +5,8 @@ Data cleaning and feature engineering for stockout prediction.
 import numpy as np
 import pandas as pd
 
+from ingest import normalize_columns
+
 
 FEATURE_COLUMNS = [
     "Closing Stock",
@@ -54,7 +56,7 @@ def clean_and_engineer(df, stockout_level=0):
     Returns:
         pd.DataFrame: Cleaned dataframe with engineered features.
     """
-    model_df = df.copy()
+    model_df = normalize_columns(df.copy())
 
     model_df["Transaction Date"] = pd.to_datetime(
         model_df["Transaction Date"], errors="coerce"

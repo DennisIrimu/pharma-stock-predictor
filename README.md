@@ -69,11 +69,23 @@ static/        # CSS styling
 python train.py --csv "Data/modeling_dataset.csv" --horizon-days 60 --stockout-level 10
 ```
 
-**Start the UI:**
+**Start the UI (Flask):**
 ```bash
 python app.py
 ```
 Then open `http://127.0.0.1:5000`.
+
+**Start the UI (Streamlit):**
+```bash
+streamlit run streamlit_app.py
+```
+
+## Deployment (Streamlit Community Cloud)
+1. Push the repo to GitHub.
+2. Ensure `requirements.txt` is present.
+3. Add model artifacts by running training locally and committing the `artifacts/` folder,
+   or run training after deployment if your data is available on the server.
+4. In Streamlit Cloud, select the repo and set the app file to `streamlit_app.py`.
 
 ## Conclusion
 This system provides a practical, explainable way to reduce pharmacy stockouts by flagging high-risk items early. The pipeline is modular and can be extended with richer features, new models, and automated retraining.

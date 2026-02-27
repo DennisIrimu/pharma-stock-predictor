@@ -1,0 +1,16 @@
+{
+  "feature_columns": [
+    "Closing Stock",
+    "Opening Stock",
+    "QTY transacted",
+    "is_decrement",
+    "rolling_qty_5",
+    "days_since_last_txn",
+    "month",
+    "dayofweek"
+  ],
+  "precision": 0.8030101446865126,
+  "recall": 0.9996894409937889,
+  "f1": 0.8906206769344277,
+  "threshold": 0.1
+}

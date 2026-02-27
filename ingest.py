@@ -26,13 +26,10 @@ def _normalize_col(col):
     Returns:
         str: Normalized column key.
     """
-    return (
-        str(col)
-        .replace("\ufeff", "")
-        .strip()
-        .lower()
-        .replace("_", " ")
-    )
+    cleaned = str(col).replace("\ufeff", "").replace("\xa0", " ")
+    cleaned = cleaned.replace("_", " ").strip().lower()
+    cleaned = " ".join(cleaned.split())
+    return cleaned
 
 
 def normalize_columns(df):
@@ -45,7 +42,7 @@ def normalize_columns(df):
     Returns:
         pd.DataFrame: Dataframe with normalized column names.
     """
-    canonical_map = { _normalize_col(c): c for c in REQUIRED_COLUMNS }
+    canonical_map = {_normalize_col(c): c for c in REQUIRED_COLUMNS}
     rename_map = {}
     for col in df.columns:
         key = _normalize_col(col)

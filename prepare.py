@@ -57,6 +57,8 @@ def clean_and_engineer(df, stockout_level=0):
         pd.DataFrame: Cleaned dataframe with engineered features.
     """
     model_df = normalize_columns(df.copy())
+    if "Item name" not in model_df.columns:
+        raise ValueError(f"'Item name' not found after normalization. Columns: {list(model_df.columns)}")
 
     model_df["Transaction Date"] = pd.to_datetime(
         model_df["Transaction Date"], errors="coerce"

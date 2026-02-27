@@ -120,6 +120,8 @@ def main():
         output = score_latest(df, stockout_level=0)
     except Exception as exc:
         st.error(f"Error: {exc}")
+        st.write("Detected columns:", list(df.columns) if "df" in locals() else "No dataframe loaded.")
+        st.write("Missing required:", sorted(REQUIRED_COLUMNS.difference(df.columns)) if "df" in locals() else "Unknown")
         return
 
     st.success("Success! Showing recommendations.")

@@ -5,7 +5,7 @@ Streamlit app for stockout prediction.
 import pandas as pd
 import streamlit as st
 
-from ingest import REQUIRED_COLUMNS
+from ingest import REQUIRED_COLUMNS, normalize_columns
 from predict import load_artifacts, score_latest
 
 
@@ -111,11 +111,7 @@ def main():
 
     try:
         df = pd.read_csv(uploaded)
-        df.columns = (
-            df.columns.astype(str)
-            .str.replace("\ufeff", "", regex=False)
-            .str.strip()
-        )
+        df = normalize_columns(df)
         missing = REQUIRED_COLUMNS.difference(df.columns)
         if missing:
             missing_list = ", ".join(sorted(missing))
